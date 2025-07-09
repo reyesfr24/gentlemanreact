@@ -1,29 +1,60 @@
 import './App.css'
-import { useState } from 'react'
-import { Button } from './components'
+import { useEffect, useState } from 'react'
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  // useEffect: Ejecutar lógica cuando se renderiza el componente! y cuando cambia el array de dependencias. Utilizado cuando se manejala entrada de entidades externas al componente como endpoints, operaciones async, parámetros de entrada, etc
+
+  // useEffect(() => {
+  //   console.log("useEffect ejecutado")
+
+  //   return () => {} // Se utiliza para limpiar y desuscribirse cuando se desmonta el componente
+  // }, []) // Array de dependencias que al cambiar los elementos que contengan se ejecuta la lógica
+
+  const [data, setdata] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+
+  const consoleLoader = (loadingValue: boolean) => {
+    setLoading(loadingValue)
+    console.info(loading)
+  }
   
-  // Notas: EL batching en React hace que se agrupen las actualizaciones de estado y las ejecuta todas antes de renderizar para mejor optimización. El valor de count cambia cuando se renderice el componente, pero abajo como agrupa los set y no renderiza hasta el final, en cada intrucción el valor de count es 0 así que solo sumará el último que será en que renderice. Si le pasamos una función si que ejecuta la función una por una actualizando el valor del estado y renderizando al final con todas las operaciones ya ejecutadas. Por eso es buena práctica pasarle una función que toma de parámetro el último estado
+  const fetchData = async () => {
+    consoleLoader(true)
+    try {
+      const response = await fetch("https://jsonplaceholder.typicode.com/posts")
 
-  // const countMore = () => { 
-  //   setCount(count +1)
-  //   setCount(count +1)
-  //   setCount(count +1)
-  // }
+      if (!response.ok) {
+        throw new Error ("Error al obtener datos") // Esto lo recibe el catch
+      }
+      
+      const jsonData = await response.json()
+      setdata(jsonData)
+    } catch (err) {
+      setError(err as string) // Le ponemos as string porque en el thorow error hemos establecido que será un string
+    } finally {
+      consoleLoader(false)
+    }
+  }
 
-  const countMore = () => {
-    setCount((count) => count +1) // (valor actual del estado) => le suma uno 
-    setCount((count) => count +1)
-    setCount((count) => count +1)
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
+
+  if (loading) {
+    return <div> Cargando...</div>
+  }
+
+  if (error) {
+    return <div> UPS! Hay un error: {error}</div>
   }
 
   return (
-    <>
-      <Button label={`Count is ${count}`} parentMethod={countMore}  />
-    </>
+    <div>{JSON.stringify(data)}</div>
   )
+
+
 }
 
 export default App
