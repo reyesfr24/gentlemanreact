@@ -1,5 +1,5 @@
 import './App.css'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 function App() {
 
@@ -14,14 +14,9 @@ function App() {
   const [data, setdata] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
-
-  const consoleLoader = (loadingValue: boolean) => {
-    setLoading(loadingValue)
-    console.info(loading)
-  }
   
   const fetchData = async () => {
-    consoleLoader(true)
+    setLoading(true)
     try {
       const response = await fetch("https://jsonplaceholder.typicode.com/posts")
 
@@ -34,13 +29,13 @@ function App() {
     } catch (err) {
       setError(err as string) // Le ponemos as string porque en el thorow error hemos establecido que será un string
     } finally {
-      consoleLoader(false)
+      setLoading(false)
     }
   }
 
   useEffect(() => {
     fetchData()
-  }, [fetchData])
+  }, [])
 
   if (loading) {
     return <div> Cargando...</div>
