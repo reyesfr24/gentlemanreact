@@ -1,13 +1,20 @@
 import './App.css'
-import { Button, ChildrenButton } from './components'
+import { Button, ColorRed } from './components'
 
 function App() {
   const handleClick = () => {
-    console.log("Click")
+    console.log("Click hecho")
+  }
+
+  const dimeHola = () => {
+    alert("hola!!")
   }
 
   return (
-    <Button parentMethod={handleClick}><ChildrenButton>My label</ChildrenButton></Button>
+    <>
+      <ColorRed><Button parentMethod={dimeHola}>Mi botón rojo</Button></ColorRed>
+      <Button parentMethod={handleClick}>Mi botón normal</Button>
+    </>
   )
 }
 
